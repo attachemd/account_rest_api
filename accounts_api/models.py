@@ -10,7 +10,7 @@ class UserProfileManager(BaseUserManager):
     Manager for user profiles.
     """
 
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, name, password):
         """
         Create a new user profile.
         """
@@ -18,7 +18,7 @@ class UserProfileManager(BaseUserManager):
             raise ValueError("Users must have an email address")
 
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name,)
+        user = self.model(email=email, name=name, )
 
         user.set_password(password)
         user.save(using=self._db)
@@ -29,10 +29,15 @@ class UserProfileManager(BaseUserManager):
         """
         Create a new superuser with the given details.
         """
-        user = self.create_user(email, name, password)
+        user = self.create_user(
+            email=self.normalize_email(email),
+            name=name,
+            password=password,
+        )
 
         user.is_superuser = True
-        user.is_stuff = True
+        user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
 
         return user
@@ -46,6 +51,8 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     name = models.CharField(max_length=255, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserProfileManager()
 
@@ -63,6 +70,12 @@ class UserProfile(AbstractBaseUser, PermissionManager):
         Retrieve short name fro user
         """
         return self.name
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 
     def __str__(self):
         """
