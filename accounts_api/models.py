@@ -17,8 +17,14 @@ class UserProfileManager(BaseUserManager):
         if not email:
             raise ValueError("Users must have an email address")
 
+        if not name:
+            raise ValueError("Users must have a name")
+
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name, )
+        user = self.model(email=email)
+        print("name: ")
+        print(name)
+        user.name = name
 
         user.set_password(password)
         user.save(using=self._db)
@@ -29,10 +35,12 @@ class UserProfileManager(BaseUserManager):
         """
         Create a new superuser with the given details.
         """
+        print("create_superuser")
+        print(name)
         user = self.create_user(
-            email=self.normalize_email(email),
-            name=name,
-            password=password,
+            email,
+            name,
+            password,
         )
 
         user.is_superuser = True
@@ -48,7 +56,7 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     Database model for users in the system.
     """
     email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, null=True)
+    name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -61,13 +69,13 @@ class UserProfile(AbstractBaseUser, PermissionManager):
 
     def get_full_name(self):
         """
-        Retrieve full name fro user
+        Retrieve full name for user
         """
         return self.name
 
     def get_short_name(self):
         """
-        Retrieve short name fro user
+        Retrieve short name for user
         """
         return self.name
 
