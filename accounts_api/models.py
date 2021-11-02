@@ -10,7 +10,7 @@ class UserProfileManager(BaseUserManager):
     Manager for user profiles.
     """
 
-    def create_user(self, email, name, password):
+    def create_user(self, email, name, test, password):
         """
         Create a new user profile.
         """
@@ -22,24 +22,23 @@ class UserProfileManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(email=email)
-        print("name: ")
-        print(name)
         user.name = name
+        user.test = test
 
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, name, password):
+    def create_superuser(self, email, name, test, password):
         """
         Create a new superuser with the given details.
         """
-        print("create_superuser")
-        print(name)
+
         user = self.create_user(
             email,
             name,
+            test,
             password,
         )
 
@@ -56,7 +55,8 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     Database model for users in the system.
     """
     email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, default='NAME STRING')
+    test = models.CharField(max_length=255, default='SOME STRING')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -65,7 +65,7 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name', 'test']
 
     def get_full_name(self):
         """

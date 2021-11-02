@@ -105,7 +105,7 @@ class HelloViewSet(viewsets.ViewSet):
         return Response({'http_method': 'DELETE'})
 
 
-# class UserProfileViewSet(viewsets.ModelViewSet):
-#     """Handle creating, creating and updating profiles"""
-#     serializer_class = serializers.UserProfileSerializer
-#     queryset = models.UserProfile.objects.all()
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
