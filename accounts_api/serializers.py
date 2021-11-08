@@ -20,10 +20,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             }
         }
 
-    def create(self, validated_data):
-        """Create and return a new user"""
-        return models.UserProfile.objects.create_user(
-            email=validated_data['email'],
-            name=validated_data['name'],
-            password=validated_data['password']
-        )
+    # def create(self, validated_data):
+    #     """Create and return a new user"""
+    #     return models.UserProfile.objects.create_user(
+    #         email=validated_data['email'],
+    #         username=validated_data['username'],
+    #         password=validated_data['password']
+    #     )
