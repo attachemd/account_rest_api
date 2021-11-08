@@ -1,4 +1,5 @@
 # from MySQLdb.constants.ER import USERNAME
+import username as username
 from django.db import models
 
 from django.contrib.auth.models import AbstractBaseUser, \
@@ -10,20 +11,20 @@ class UserProfileManager(BaseUserManager):
     Manager for user profiles.
     """
 
-    def create_user(self, email, username, test, password):
+    def create_user(self, email, name, test, password):
         """
         Create a new user profile.
         """
         if not email:
             raise ValueError("Users must have an email address")
 
-        if not username:
+        if not name:
             raise ValueError("Users must have a name")
 
         email = self.normalize_email(email)
-        user = self.model(email=email)
+        user = self.model(email=email, username=name)
 
-        user.name = username
+        user.name = name
         user.test = test
 
         user.set_password(password)
@@ -31,14 +32,14 @@ class UserProfileManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, username, test, password):
+    def create_superuser(self, email, name, test, password):
         """
         Create a new superuser with the given details.
         """
 
         user = self.create_user(
             email=email,
-            username=username,
+            name=name,
             test=test,
             password=password
         )
