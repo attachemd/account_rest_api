@@ -1,5 +1,4 @@
 # from MySQLdb.constants.ER import USERNAME
-import username as username
 from django.db import models
 
 from django.contrib.auth.models import AbstractBaseUser, \
@@ -11,20 +10,20 @@ class UserProfileManager(BaseUserManager):
     Manager for user profiles.
     """
 
-    def create_user(self, email, name, test, password):
+    def create_user(self, email, field_name, test, password):
         """
         Create a new user profile.
         """
         if not email:
             raise ValueError("Users must have an email address")
 
-        if not name:
-            raise ValueError("Users must have a name")
+        if not field_name:
+            raise ValueError("Users must have a field_name")
 
         email = self.normalize_email(email)
-        user = self.model(email=email, username=name)
+        user = self.model(email=email)
 
-        user.name = name
+        user.field_name = field_name
         user.test = test
 
         user.set_password(password)
@@ -32,14 +31,14 @@ class UserProfileManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, name, test, password):
+    def create_superuser(self, email, field_name, test, password):
         """
         Create a new superuser with the given details.
         """
 
         user = self.create_user(
             email=email,
-            name=name,
+            field_name=field_name,
             test=test,
             password=password
         )
@@ -58,9 +57,10 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     """
     id = models.AutoField(primary_key=True)
     email = models.EmailField("email", max_length=255, unique=True)
-    # name = models.CharField(max_length=255, blank=False, null=False)
+    # field_name = models.CharField(max_length=255, blank=False, null=False)
     # username = None
-    name = models.CharField("name", max_length=255, default='NAME STRING')
+    # username = models.CharField(max_length=255)
+    field_name = models.CharField("field_name", max_length=255, default='NAME STRING')
     test = models.CharField("test", max_length=255, default='SOME STRING')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -70,19 +70,19 @@ class UserProfile(AbstractBaseUser, PermissionManager):
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'test']
+    REQUIRED_FIELDS = ['field_name', 'test']
 
     def get_full_name(self):
         """
         Retrieve full name for user
         """
-        return self.name
+        return self.field_name
 
     def get_short_name(self):
         """
         Retrieve short name for user
         """
-        return self.name
+        return self.field_name
 
     def has_perm(self, perm, obj=None):
         return self.is_superuser
